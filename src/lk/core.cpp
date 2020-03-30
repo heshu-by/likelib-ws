@@ -291,7 +291,7 @@ std::tuple<bc::Address, base::Bytes, bc::Balance> Core::doContractCreation(const
     bc::Address contract_address = _account_manager.newContract(tx.getFrom(), hash);
     LOG_DEBUG << "Deploying smart contract at address " << contract_address;
     if (tx.getAmount() != 0) {
-        if (!_account_manager.tryTransferMoney(tx.getFrom(), tx.getTo(), tx.getAmount())) {
+        if (!_account_manager.tryTransferMoney(tx.getFrom(), contract_address, tx.getAmount())) {
             RAISE_ERROR(base::Error, "cannot transfer money");
         }
     }
