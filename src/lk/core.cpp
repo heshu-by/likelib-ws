@@ -26,7 +26,9 @@ Core::Core(const base::PropertyTree& config, const base::KeyVault& key_vault)
     _blockchain.load();
     for (bc::BlockDepth d = 1; d <= _blockchain.getTopBlock().getDepth(); ++d) {
         auto block = *_blockchain.findBlock(*_blockchain.findBlockHashByDepth(d));
-        _account_manager.update(block);
+        for (const auto& tx : block.getTransactions()) {
+            tryPerformTransaction(tx, block);
+        }
     }
 }
 
