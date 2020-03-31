@@ -127,7 +127,7 @@ class ActionMessageCall : public ActionBase
   private:
     //====================================
     std::string _host_address;
-    bc::Address _to_address{ lk::Address::null() };
+    bc::Address _to_address{ bc::Address::null() };
     bc::Balance _amount;
     bc::Balance _fee;
     std::filesystem::path _keys_dir;
