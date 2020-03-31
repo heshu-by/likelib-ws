@@ -106,7 +106,7 @@ class ActionCreateContract : public ActionBase
     std::string _host_address;
     std::filesystem::path _keys_dir;
     bc::Balance _amount;
-    bc::Balance _gas;
+    bc::Balance _fee;
     std::string _compiled_contract;
     std::string _message;
     //====================================
@@ -127,9 +127,9 @@ class ActionMessageCall : public ActionBase
   private:
     //====================================
     std::string _host_address;
-    bc::Address _to_address{ bc::Address::null() };
+    bc::Address _to_address{ lk::Address::null() };
     bc::Balance _amount;
-    bc::Balance _gas;
+    bc::Balance _fee;
     std::filesystem::path _keys_dir;
     std::string _message;
     //====================================
