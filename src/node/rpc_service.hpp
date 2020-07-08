@@ -1,7 +1,8 @@
 #pragma once
 
-#include "bc/transaction.hpp"
-#include "lk/core.hpp"
+#include "core/core.hpp"
+#include "core/transaction.hpp"
+
 #include "rpc/base_rpc.hpp"
 
 namespace node
@@ -12,35 +13,24 @@ class GeneralServerService : public rpc::BaseRpc
   public:
     explicit GeneralServerService(lk::Core& core);
 
-    ~GeneralServerService() override;
+    ~GeneralServerService() override = default;
 
-    rpc::OperationStatus test(uint32_t api_version) override;
+    lk::AccountInfo getAccountInfo(const lk::Address& address) override;
 
-    bc::Balance balance(const bc::Address& address) override;
+    rpc::Info getNodeInfo() override;
 
-    rpc::Info info() override;
+    lk::ImmutableBlock getBlock(const base::Sha256& block_hash) override;
 
-    bc::Block get_block(const base::Sha256& block_hash) override;
+    lk::ImmutableBlock getBlock(uint64_t block_number) override;
 
-    std::tuple<rpc::OperationStatus, bc::Address, bc::Balance> transaction_create_contract(
-      bc::Balance amount,
-      const bc::Address& from_address,
-      const base::Time& timestamp,
-      bc::Balance gas,
-      const std::string& contract_code,
-      const std::string& init,
-      const bc::Sign& signature) override;
+    lk::Transaction getTransaction(const base::Sha256& transaction_hash) override;
 
-    std::tuple<rpc::OperationStatus, std::string, bc::Balance> transaction_message_call(
-      bc::Balance amount,
-      const bc::Address& from_address,
-      const bc::Address& to_address,
-      const base::Time& timestamp,
-      bc::Balance gas,
-      const std::string& message,
-      const bc::Sign& signature) override;
+    lk::TransactionStatus pushTransaction(const lk::Transaction& transaction) override;
+
+    lk::TransactionStatus getTransactionStatus(const base::Sha256& transaction_hash) override;
 
   private:
     lk::Core& _core;
 };
+
 } // namespace node

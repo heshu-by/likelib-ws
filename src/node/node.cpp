@@ -8,7 +8,7 @@ Node::Node(const base::PropertyTree& config)
   , _core{ _config, _key_vault }
 {
     auto service = std::make_shared<node::GeneralServerService>(_core);
-    _rpc = std::make_unique<rpc::RpcServer>(_config.get<std::string>("rpc.address"), service);
+    _rpc = rpc::create_rpc_server(_config, service);
 
     auto miner_callback = std::bind(&Node::onBlockMine, this, std::placeholders::_1);
     _miner = std::make_unique<Miner>(_config, miner_callback);
@@ -24,36 +24,32 @@ void Node::run()
 
     try {
         _rpc->run();
-        LOG_INFO << "RPC server started: " << _config.get<std::string>("rpc.address");
     }
     catch (const std::exception& e) {
-        LOG_WARNING << "Cannot start RPC server: " << e.what();
+        LOG_WARNING << "Cannot startSession RPC server: " << e.what();
     }
     catch (...) {
-        LOG_WARNING << "Cannot start RPC server: unknown error";
+        LOG_WARNING << "Cannot startSession RPC server: unknown error";
     }
 }
 
 
-void Node::onBlockMine(bc::Block&& block)
+void Node::onBlockMine(lk::ImmutableBlock&& block)
 {
-    _core.tryAddBlock(block);
+    LOG_DEBUG << "Block " << base::Sha256::compute(base::toBytes(block)) << " mined";
+    [[maybe_unused]] auto r = _core.tryAddMinedBlock(block);
+    if (r != lk::Blockchain::AdditionResult::ADDED) {
+        LOG_DEBUG << "Block " << base::Sha256::compute(base::toBytes(block)) << " addition resulted in error code "
+                  << static_cast<int>(r);
+    }
 }
 
 
-base::FixedBytes<impl::CommonData::COMPLEXITY_SIZE> Node::getMiningComplexity()
+void Node::onNewTransactionReceived(const lk::Transaction&)
 {
-    base::FixedBytes<impl::CommonData::COMPLEXITY_SIZE> complexity;
-    complexity[2] = 0xbf;
-    return complexity;
-}
-
-
-void Node::onNewTransactionReceived(const bc::Transaction&)
-{
-    bc::Block block = _core.getBlockTemplate();
+    auto [block, complexity] = _core.getMiningData();
     if (!block.getTransactions().isEmpty()) {
-        _miner->findNonce(_core.getBlockTemplate(), getMiningComplexity());
+        _miner->findNonce(block, complexity);
     }
     else {
         _miner->dropJob();
@@ -61,11 +57,11 @@ void Node::onNewTransactionReceived(const bc::Transaction&)
 }
 
 
-void Node::onNewBlock(const bc::Block&)
+void Node::onNewBlock(const lk::ImmutableBlock&)
 {
-    bc::Block block = _core.getBlockTemplate();
+    auto [block, complexity] = _core.getMiningData();
     if (!block.getTransactions().isEmpty()) {
-        _miner->findNonce(_core.getBlockTemplate(), getMiningComplexity());
+        _miner->findNonce(block, complexity);
     }
     else {
         _miner->dropJob();

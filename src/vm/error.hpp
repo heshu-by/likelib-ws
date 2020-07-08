@@ -2,7 +2,6 @@
 
 #include "base/error.hpp"
 
-
 namespace vm
 {
 

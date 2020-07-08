@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <thread>
 
@@ -22,6 +23,7 @@ constexpr bool IS_DEBUG =
 #else
 #define CONFIG_IS_DEBUG
 #endif
+
 //------------------------
 
 // macro CONFIG_OS_FAMILY_NAME definition
@@ -57,7 +59,6 @@ constexpr const char* const OS_NAME =
   ;
 //------------------------
 
-
 // logging configuration
 constexpr const char* LOG_FILE_FORMAT = "%m-%d-%Y_%H-%M-%S_%N.log";
 constexpr const char* LOG_FOLDER = "logs";
@@ -74,15 +75,22 @@ constexpr int EXIT_ASSERT_FAILED = 2;
 
 // net
 constexpr std::size_t NET_MESSAGE_BUFFER_SIZE = 16 * 1024; // 16KB
-constexpr std::size_t NET_PING_FREQUENCY = 7000;           // seconds
+constexpr std::size_t NET_PING_FREQUENCY = 3600;           // seconds
+constexpr std::size_t NET_CONNECT_TIMEOUT = 10;            // seconds
+constexpr std::size_t NET_LOOKUP_ALPHA = 5;                // how many peers to return during lookup
+constexpr std::size_t NET_REQUEST_TIMEOUT = 10; // how many seconds do we wait for a request, until we call it lost
 //------------------------
 
 // blockchain
 constexpr std::size_t BC_MAX_TRANSACTIONS_IN_BLOCK = 100;
+constexpr std::size_t BC_TARGET_BLOCKS_PER_MINUTE = 1;      // block every 60 / 12 == 5 seconds
+constexpr std::size_t BC_DIFFICULTY_RECALCULATION_RATE = 2; // how many blocks must be added to recalculate difficulty
+constexpr std::size_t BC_MAXIMAL_CHANGE_MULTIPLIER = 1'000'000'000; // times complexity could change at once
+constexpr std::size_t BC_EMISSION_VALUE = 1000;
 //------------------------
 
 // rpc
-constexpr const uint32_t RPC_PUBLIC_API_VERSION = 1;
+constexpr const std::uint32_t RPC_PUBLIC_API_VERSION = 1;
 //--------------------
 
 // database
@@ -93,7 +101,6 @@ constexpr bool DATABASE_COMPRESS_DATA = false;                           // no c
 //--------------------
 
 // keys paths
-std::filesystem::path makePublicKeyPath(const std::filesystem::path& path);
 std::filesystem::path makePrivateKeyPath(const std::filesystem::path& path);
 
 } // namespace base::config

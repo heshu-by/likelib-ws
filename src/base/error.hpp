@@ -3,34 +3,29 @@
 #include <boost/current_function.hpp>
 
 #include <exception>
-#include <iosfwd>
 #include <string>
 
 namespace base
 {
+
 class Error : public std::exception
 {
   public:
-    Error() = default;
-
-    Error(const std::string& message);
-
+    Error(const char* file_name, std::size_t line_number, const char* function_signature, std::string message = {});
     Error(const Error&) = default;
-
     Error(Error&&) = default;
-
-    ~Error() = default;
-
+    ~Error() override = default;
     Error& operator=(const Error&) = default;
-
     Error& operator=(Error&&) = default;
-
-    const std::string& toStdString() const noexcept;
-
+    const std::string& getMessage() const noexcept;
     const char* what() const noexcept override;
 
   private:
+    const char* _file_name;
+    std::size_t _line_number;
+    const char* _function_signature;
     std::string _message;
+    std::string _full_message;
 };
 
 class InvalidArgument : public Error
@@ -68,19 +63,21 @@ class LogicError : public Error
     using Error::Error;
 };
 
-std::ostream& operator<<(std::ostream& os, const Error& error);
+class RuntimeError : public Error
+{
+    using Error::Error;
+};
 
-#define RAISE_ERROR(error_type, message)                                                                               \
-    throw error_type(std::string{ __FILE__ } + std::string{ ":" } + std::to_string(__LINE__) + std::string{ " :: " } + \
-                     std::string{ BOOST_CURRENT_FUNCTION } + std::string{ " :: " } + (message))
+class ValueNotFound : public RuntimeError
+{
+    using RuntimeError::RuntimeError;
+};
 
+class UseOfUninitializedValue : public RuntimeError
+{
+    using RuntimeError::RuntimeError;
+};
 
-#define CLARIFY_ERROR(error_type, expr, message)                                                                       \
-    try {                                                                                                              \
-        expr;                                                                                                          \
-    }                                                                                                                  \
-    catch (const std::exception& e) {                                                                                  \
-        RAISE_ERROR(error_type, std::string{ message } + std::string{ ": " } + e.what());                              \
-    }
+#define RAISE_ERROR(error_type, ...) throw error_type(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION, __VA_ARGS__)
 
 } // namespace base

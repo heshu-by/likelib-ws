@@ -3,12 +3,12 @@
 #include "serialization.hpp"
 
 #include "base/assert.hpp"
+#include "base/big_integer.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/endian/conversion.hpp>
 
 #include <functional>
-
 
 namespace impl
 {
@@ -20,8 +20,11 @@ struct TrickFalse : std::false_type
 
 struct Base
 {};
+
+
 struct Derived : Base
 {};
+
 
 template<typename T>
 struct IntHolder
@@ -194,6 +197,17 @@ class global_deserialize<std::string>
 };
 
 
+template<typename T>
+class global_deserialize<base::BigInteger<T>>
+{
+  public:
+    base::BigInteger<T> deserialize(base::SerializationIArchive& ia, const base::Bytes&, std::size_t&)
+    {
+        return base::BigInteger<T>{ ia.deserialize<std::string>() };
+    }
+};
+
+
 template<typename, typename T>
 struct has_serialize
 {
@@ -316,6 +330,17 @@ class global_serialize<std::string>
 };
 
 
+template<typename T>
+class global_serialize<base::BigInteger<T>>
+{
+  public:
+    void serialize(base::SerializationOArchive& oa, const base::BigInteger<T>& n, base::Bytes&)
+    {
+        oa.serialize(n.str());
+    }
+};
+
+
 } // namespace impl
 
 
@@ -374,6 +399,15 @@ base::Bytes toBytes(const T& value)
 
 template<typename T>
 T fromBytes(const base::Bytes& bytes)
+{
+    SerializationIArchive ia(bytes);
+    T t = ia.deserialize<T>();
+    return t;
+}
+
+
+template<typename T, std::size_t S>
+T fromBytes(const base::FixedBytes<S>& bytes)
 {
     SerializationIArchive ia(bytes);
     T t = ia.deserialize<T>();

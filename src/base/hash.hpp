@@ -11,20 +11,20 @@ namespace base
 class Sha256
 {
   public:
-    static constexpr std::size_t SHA256_SIZE = 32;
+    static constexpr std::size_t LENGTH = 32; // bytes
     //----------------------------------
     Sha256(const Sha256&) = default;
-    Sha256(Sha256&&) = default;
+    explicit Sha256(Sha256&&) = default;
     explicit Sha256(const Bytes& data);
     Sha256(Bytes&& data);
-    Sha256(const FixedBytes<SHA256_SIZE>& data);
-    Sha256(FixedBytes<SHA256_SIZE>&& data);
+    Sha256(const FixedBytes<LENGTH>& data);
+    Sha256(FixedBytes<LENGTH>&& data);
     Sha256& operator=(const Sha256&) = default;
     Sha256& operator=(Sha256&&) = default;
     ~Sha256() = default;
     //----------------------------------
     std::string toHex() const;
-    const base::FixedBytes<SHA256_SIZE>& getBytes() const noexcept;
+    const base::FixedBytes<LENGTH>& getBytes() const noexcept;
     //----------------------------------
     static Sha256 null();
     static Sha256 fromHex(const std::string& hex_view);
@@ -42,20 +42,23 @@ class Sha256
     static Sha256 deserialize(SerializationIArchive& ia);
     //----------------------------------
   private:
-    base::FixedBytes<SHA256_SIZE> _bytes;
+    base::FixedBytes<LENGTH> _bytes;
 };
 
 std::ostream& operator<<(std::ostream& os, const Sha256& sha);
 
 } // namespace base
 
+
 namespace std
 {
+
 template<>
 struct hash<base::Sha256>
 {
     std::size_t operator()(const base::Sha256& k) const;
 };
+
 } // namespace std
 
 
@@ -65,20 +68,20 @@ namespace base
 class Sha1
 {
   public:
-    static constexpr std::size_t SHA1_SIZE = 20;
+    static constexpr std::size_t LENGTH = 20; // bytes
     //----------------------------------
     Sha1(const Sha1&) = default;
     Sha1(Sha1&&) = default;
     Sha1(const Bytes& data);
     Sha1(Bytes&& data);
-    Sha1(const FixedBytes<SHA1_SIZE>& data);
-    Sha1(FixedBytes<SHA1_SIZE>&& data);
+    Sha1(const FixedBytes<LENGTH>& data);
+    Sha1(FixedBytes<LENGTH>&& data);
     Sha1& operator=(const Sha1&) = default;
     Sha1& operator=(Sha1&&) = default;
     ~Sha1() = default;
     //----------------------------------
     std::string toHex() const;
-    const base::FixedBytes<SHA1_SIZE>& getBytes() const noexcept;
+    const base::FixedBytes<LENGTH>& getBytes() const noexcept;
     //----------------------------------
     static Sha1 fromHex(const std::string_view& hex_view);
     //----------------------------------
@@ -94,7 +97,7 @@ class Sha1
     static Sha1 deserialize(SerializationIArchive& ia);
     //----------------------------------
   private:
-    base::FixedBytes<SHA1_SIZE> _bytes;
+    base::FixedBytes<LENGTH> _bytes;
 };
 
 std::ostream& operator<<(std::ostream& os, const Sha1& sha);
@@ -104,11 +107,13 @@ std::ostream& operator<<(std::ostream& os, const Sha1& sha);
 
 namespace std
 {
+
 template<>
 struct hash<base::Sha1>
 {
     std::size_t operator()(const base::Sha1& k) const;
 };
+
 } // namespace std
 
 
@@ -118,20 +123,20 @@ namespace base
 class Ripemd160
 {
   public:
-    static constexpr std::size_t RIPEMD160_SIZE = 20;
+    static constexpr std::size_t LENGTH = 20; // bytes
     //----------------------------------
     Ripemd160(const Ripemd160&) = default;
     Ripemd160(Ripemd160&&) = default;
     Ripemd160(const Bytes& data);
     Ripemd160(Bytes&& data);
-    Ripemd160(const FixedBytes<RIPEMD160_SIZE>& data);
-    Ripemd160(FixedBytes<RIPEMD160_SIZE>&& data);
+    Ripemd160(const FixedBytes<LENGTH>& data);
+    Ripemd160(FixedBytes<LENGTH>&& data);
     Ripemd160& operator=(const Ripemd160&) = default;
     Ripemd160& operator=(Ripemd160&&) = default;
     ~Ripemd160() = default;
     //----------------------------------
     std::string toHex() const;
-    const base::FixedBytes<RIPEMD160_SIZE>& getBytes() const noexcept;
+    const base::FixedBytes<LENGTH>& getBytes() const noexcept;
     //----------------------------------
     static Ripemd160 fromHex(const std::string& hex_view);
     //----------------------------------
@@ -147,20 +152,23 @@ class Ripemd160
     static Ripemd160 deserialize(SerializationIArchive& ia);
     //----------------------------------
   private:
-    base::FixedBytes<RIPEMD160_SIZE> _bytes;
+    base::FixedBytes<LENGTH> _bytes;
 };
 
 std::ostream& operator<<(std::ostream& os, const Ripemd160& sha);
 
 } // namespace base
 
+
 namespace std
 {
+
 template<>
 struct hash<base::Ripemd160>
 {
     std::size_t operator()(const base::Ripemd160& k) const;
 };
+
 } // namespace std
 
 
@@ -208,7 +216,6 @@ class Sha3
     base::Bytes _bytes;
 };
 
-
 std::ostream& operator<<(std::ostream& os, const Sha3& sha);
 
 } // namespace base
@@ -216,11 +223,65 @@ std::ostream& operator<<(std::ostream& os, const Sha3& sha);
 
 namespace std
 {
+
 template<>
 struct hash<base::Sha3>
 {
     std::size_t operator()(const base::Sha3& k) const;
 };
+
+} // namespace std
+
+
+namespace base
+{
+
+class Keccak256
+{
+  public:
+    static constexpr std::size_t LENGTH = 32; // bytes
+    //----------------------------------
+    Keccak256(const Keccak256&) = default;
+    Keccak256(Keccak256&&) = default;
+    Keccak256(const Bytes& data);
+    Keccak256(Bytes&& data);
+    Keccak256(const FixedBytes<LENGTH>& data);
+    Keccak256(FixedBytes<LENGTH>&& data);
+    Keccak256& operator=(const Keccak256&) = default;
+    Keccak256& operator=(Keccak256&&) = default;
+    ~Keccak256() = default;
+    //----------------------------------
+    std::string toHex() const;
+    const base::FixedBytes<LENGTH>& getBytes() const noexcept;
+    //----------------------------------
+    static Keccak256 fromHex(const std::string_view& hex_view);
+    //----------------------------------
+    bool operator==(const Keccak256& another) const;
+    bool operator!=(const Keccak256& another) const;
+    //----------------------------------
+    static Keccak256 compute(const base::Bytes& data);
+    //----------------------------------
+    void serialize(SerializationOArchive& oa) const;
+    static Keccak256 deserialize(SerializationIArchive& ia);
+    //----------------------------------
+  private:
+    base::FixedBytes<LENGTH> _bytes;
+};
+
+std::ostream& operator<<(std::ostream& os, const Keccak256& sha);
+
+} // namespace base
+
+
+namespace std
+{
+
+template<>
+struct hash<base::Keccak256>
+{
+    std::size_t operator()(const base::Keccak256& k) const;
+};
+
 } // namespace std
 
 
