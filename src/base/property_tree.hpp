@@ -15,6 +15,9 @@ class PropertyTree
     friend void save(const PropertyTree& tree, const std::filesystem::path& path_to_save);
 
   public:
+    using iterator = boost::property_tree::ptree::iterator;
+    using const_iterator = boost::property_tree::ptree::const_iterator;
+
     struct KeyNotFound : base::Error
     {
         KeyNotFound(const char* file_name,
@@ -39,9 +42,22 @@ class PropertyTree
     PropertyTree getSubTree(const std::string& path) const;
 
     template<typename R>
+    void add(const std::string& path, R val);
+
+    void add(const std::string& path, const PropertyTree& val);
+
+    void add(const std::string& path, PropertyTree&& val);
+
+    template<typename R>
     std::vector<R> getVector(const std::string& path) const;
 
     std::string toString() const;
+
+    iterator begin();
+    iterator end();
+
+    const_iterator begin() const;
+    const_iterator end() const;
 
   private:
     boost::property_tree::ptree _ptree;

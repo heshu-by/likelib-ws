@@ -22,9 +22,8 @@ By default it is config.json file of the following format:
         "public_port": 20203,
         "peers_db": "likelib/peers"
     },
-    "rpc": {
-        "grpc_address": "0.0.0.0:50051",
-        "http_address": "0.0.0.0:50052"
+    "websocket": {
+        "listen_addr": "0.0.0.0:50051"
     },
     "miner": {
         "threads": 4

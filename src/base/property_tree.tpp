@@ -20,6 +20,13 @@ R PropertyTree::get(const std::string& path) const
 
 
 template<typename R>
+void PropertyTree::add(const std::string& path, R val)
+{
+    _ptree.put(path, val);
+}
+
+
+template<typename R>
 std::vector<R> PropertyTree::getVector(const std::string& path) const
 {
     try {
@@ -33,5 +40,6 @@ std::vector<R> PropertyTree::getVector(const std::string& path) const
         RAISE_ERROR(KeyNotFound, e.what(), path);
     }
 }
+
 
 } // namespace base
